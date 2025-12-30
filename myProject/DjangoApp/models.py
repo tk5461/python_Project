@@ -14,14 +14,10 @@ class status(Enum):
 
 class Team(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
 
     def __str__(self):
-        return f' Author : {self.firstName} ({self.lastName})'
-
-
-    def __str__(self):
-        return f' Author : {self.title} ({self.status})'
+        return f' {self.title}'
 
 class Person(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

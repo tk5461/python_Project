@@ -9,9 +9,9 @@
     <title>דף הבית</title>
 </head>
 <body>
-<h1>welcome !!!!!!</h1>
+<h1>welcome {{ user.username }}</h1>
+ <a href="{% url 'login' %}">Login</a>
  <a href="{% url 'register' %}">Register</a>
-<button>Login</button>
 </body>
 </html>
 

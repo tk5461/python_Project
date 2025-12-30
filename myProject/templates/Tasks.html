@@ -1,0 +1,53 @@
+
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דף הבית</title>
+</head>
+<body>
+<h1>welcome {{user.username}}</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>שם משימה</th>
+        <th>תיאור</th>
+        <th>תאריך יעד</th>
+        <th>סטטוס</th>
+        <th>צוות</th>
+        <th>אחראי</th>
+        {% if not task.performer %}
+        <th>פעולות</th>
+        {% elif task.performer == user %}
+        <th>פעולות</th>
+        {% endif %}
+        {% if user.userprofile.role == 'Manager' %}
+        <th>Edit</th>
+        <th>Delete</th>
+        {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for task in tasks %}
+    <tr>
+        <td>{{ task.title }}</td>
+        <td>{{ task.description }}</td>
+        <td>{{ task.date_end }}</td>
+        <td>{{ task.status }}</td>
+        <td>{{ task.team }}</td>
+        <td>{{ task.Executor }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+
+</body>
+</html>
+
+{% endblock %}
