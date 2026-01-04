@@ -8,11 +8,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>דף הבית</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <h1>welcome {{user.username}}</h1>
-
-<table>
+    {% if user.person.role == 'admin' %}
+        <a href="{% url 'addTask' %}" class="btn btn-info">Add TASK</a>
+    {% endif %}
+     <input placeholder="enter name executor" id="myInput1" onkeyup="myFunction()" type="text">
+    <form method="GET" action="{% url 'filter_by_status' %}">
+    <select name="status">
+        <option value="">בחר סטטוס</option>
+        <option value="new" {% if request.GET.status == 'new' %} selected {% endif %}>new</option>
+        <option value="in_progress" {% if request.GET.status == 'in_progress' %} selected {% endif %}>in_progress</option>
+        <option value="completed" {% if request.GET.status == 'completed' %} selected {% endif %}>completed</option>
+    </select>
+    <button type="submit" class="btn btn-primary">סנן</button>
+    </form>
+    <div class="alert alert-info">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+<table class="table table-striped">
     <thead>
     <tr>
         <th>שם משימה</th>
@@ -21,31 +39,58 @@
         <th>סטטוס</th>
         <th>צוות</th>
         <th>אחראי</th>
-        {% if not task.performer %}
-        <th>פעולות</th>
-        {% elif task.performer == user %}
-        <th>פעולות</th>
-        {% endif %}
-        {% if user.userprofile.role == 'Manager' %}
-        <th>Edit</th>
-        <th>Delete</th>
+       {% if user.person.role == 'admin' %}
+        <th>Administrator actions</th>
         {% endif %}
     </tr>
     </thead>
     <tbody>
     {% for task in tasks %}
+    {% if user.person.team == task.team %}
     <tr>
         <td>{{ task.title }}</td>
         <td>{{ task.description }}</td>
         <td>{{ task.date_end }}</td>
-        <td>{{ task.status }}</td>
+        <td>
+            {{ task.status }}
+            <form method="POST" action="{% url 'update_task_status' task.id %}">
+                {% csrf_token %}
+                <select name="status">
+                    <option value="new"{% if task.status == "new" %} selected{% endif %}>new</option>
+                    <option value="in_progress"{% if task.status == "in_progress" %} selected{% endif %}>in_progress</option>
+                    <option value="completed"{% if task.status == "completed" %} selected{% endif %}>completed</option>
+                </select>
+                <button type="submit" class="btn btn-primary">עדכן סטטוס</button>
+            </form>
+        </td>
         <td>{{ task.team }}</td>
-        <td>{{ task.Executor }}</td>
+        {% if task.Executor != None %}
+            <td>{{ task.Executor }}</td>
+        {% else %}
+            <td> {% if user.person.role == 'admin' %}
+                <form action="{% url 'update_task_executor' task.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Assing task for me</button>
+            </form>
+            {% endif %}
+            </td>
+        {% endif %}
+        {% if user.person.role == 'admin' %}
+        <td>
+            <a href="{% url 'editTask' task.id %}" class="btn btn-info">Edit</a>
+           <form method="POST" action="{% url 'delete_task' task.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </td>
+        {% endif %}
     </tr>
+    {% endif %}
     {% endfor %}
+    {% if messages %}
+    {% endif %}
     </tbody>
 </table>
-
 
 </body>
 </html>

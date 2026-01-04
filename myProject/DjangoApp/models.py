@@ -7,9 +7,9 @@ class role(Enum):
     USER = "user"
 
 class status(Enum):
-    NEW = "new"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
+    new = "new"
+    in_progress = "in_progress"
+    completed = "completed"
 
 
 class Team(models.Model):
@@ -29,7 +29,7 @@ class Person(models.Model):
     team = models.ForeignKey(Team , on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return f' Author : {self.user.username} ({self.role})'
+        return f' {self.user.username} ({self.role})'
 
 class Task(models.Model):
     id = models.AutoField(primary_key=True)
@@ -40,7 +40,7 @@ class Task(models.Model):
     status = models.CharField(
         max_length=100,
         choices=[(status.value , status.name) for status in status],
-        default=status.NEW.value
+        default=status.new.value
     )
     team = models.ForeignKey(Team , on_delete=models.CASCADE)
 
