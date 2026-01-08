@@ -2,41 +2,63 @@
 {% load static %}
 {% block content %}
 
-<form method="post" class="register-form">
+<div class="container mt-5">
+    <form method="post" class="register-form">
+        {% csrf_token %}
 
-{% csrf_token %}
+        <h2 class="text-center">Register</h2>
 
-<div>
+        {% if user_form.errors %}
+            <div class="alert alert-danger">
+                <ul>
+                    {% for field, errors in user_form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field|capfirst }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
 
-{{ user_form.username.label_tag }} {{ user_form.username }}
+        {% if person_form.errors %}
+            <div class="alert alert-danger">
+                <ul>
+                    {% for field, errors in person_form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field|capfirst }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
 
+        <div class="form-group">
+            {{ user_form.username.label }}
+            {{ user_form.username }}
+        </div>
+
+        <div class="form-group">
+            {{ user_form.password1.label }}
+            {{ user_form.password1 }}
+        </div>
+
+        <div class="form-group">
+            {{ user_form.password2.label }}
+            {{ user_form.password2 }}
+        </div>
+
+        <div class="form-group">
+            {{ person_form.team.label }}
+            {{ person_form.team }}
+        </div>
+
+        <div class="form-group">
+            {{ person_form.role.label }}
+            {{ person_form.role }}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
+    </form>
 </div>
 
-<div>
-
-{{ user_form.password1.label_tag }} {{ user_form.password1 }}
-
-</div>
-
-<div>
-
-{{ user_form.password2.label_tag }} {{ user_form.password2 }}
-
-</div>
-
-<div>
-
-{{ person_form.team.label_tag }} {{ person_form.team }}
-
-</div>
-
-<div>
-
-{{ person_form.role.label_tag }} {{ person_form.role }}
-
-</div>
-
-<button type="submit">Register</button> 
-
-</form>
 {% endblock %}

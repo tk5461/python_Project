@@ -256,6 +256,7 @@ body {
 }
 
     </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 
@@ -268,8 +269,9 @@ body {
 
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'tasks' %}">המשימות שלי</a></li>
-                    <li><a href="home.html">הוספת משימה +</a></li>
-<!--                    <li><a href="home.html">פרופיל ({{ user.username }})</a></li>-->
+                       {% if user.person.role == 'admin' %}
+                        <li><a href="{% url 'addTask' %}">הוספת משימה +</a></li>
+                        {% endif %}
                     <a href="{% url 'logout' %}">התנתקות</a>
                 {% else %}
                     <li><a href="{% url 'login' %}">התחברות</a></li>

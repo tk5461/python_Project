@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
@@ -11,84 +10,99 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<h1>welcome {{user.username}}</h1>
-    {% if user.person.role == 'admin' %}
-        <a href="{% url 'addTask' %}" class="btn btn-info">Add TASK</a>
-    {% endif %}
-     <input placeholder="enter name executor" id="myInput1" onkeyup="myFunction()" type="text">
-    <form method="GET" action="{% url 'filter_by_status' %}">
-    <select name="status">
-        <option value="">בחר סטטוס</option>
-        <option value="new" {% if request.GET.status == 'new' %} selected {% endif %}>new</option>
-        <option value="in_progress" {% if request.GET.status == 'in_progress' %} selected {% endif %}>in_progress</option>
-        <option value="completed" {% if request.GET.status == 'completed' %} selected {% endif %}>completed</option>
-    </select>
-    <button type="submit" class="btn btn-primary">סנן</button>
-    </form>
-    <div class="alert alert-info">
-        {% for message in messages %}
-            {{ message }}
+<h1>ברוך הבא {{ user.username }}</h1>
+
+{% if user.person.role == 'admin' %}
+    <a href="{% url 'addTask' %}" class="btn btn-info">Add TASK</a>
+{% endif %}
+
+<form method="GET" action="{% url 'filter_tasks_By_Status' %}" id="status-filter-form">
+    {% csrf_token %}
+    <label>סינון לפי עובד:</label>
+    <select name="employee" class="form-select">
+        <option value="">בחר עובד</option>
+        {% for emp in employees %}
+            <option value="{{ emp.id }}" {% if request.GET.employee == emp.id|stringformat:"s" %} selected {% endif %}>
+                {{ emp.user.username }}
+            </option>
         {% endfor %}
-    </div>
+    </select>
+
+<!--<form method="POST" action="{% url 'filter_tasks_By_Status' %}" id="status-filter-form">-->
+<!--    {% csrf_token %}-->
+    <label>סינון לפי סטטוס</label>
+    <select name="status" class="form-control" onchange="document.getElementById('status-filter-form').submit();">
+        <option value="new" {% if request.POST.status == "new" %} selected {% endif %}>חדש</option>
+        <option value="in_progress" {% if request.POST.status == "in_progress" %} selected {% endif %}>בתהליך</option>
+        <option value="completed" {% if request.POST.status == "completed" %} selected {% endif %}>הושלם</option>
+        <option value="all" {% if request.POST.status == "all" %} selected {% endif %}>הכל</option>
+    </select>
+</form>
+
+<div class="alert alert-info">
+    {% for message in messages %}
+        {{ message }}
+    {% endfor %}
+</div>
+
 <table class="table table-striped">
     <thead>
-    <tr>
-        <th>שם משימה</th>
-        <th>תיאור</th>
-        <th>תאריך יעד</th>
-        <th>סטטוס</th>
-        <th>צוות</th>
-        <th>אחראי</th>
-       {% if user.person.role == 'admin' %}
-        <th>Administrator actions</th>
-        {% endif %}
-    </tr>
+        <tr>
+            <th>שם משימה</th>
+            <th>תיאור</th>
+            <th>תאריך יעד</th>
+            <th>סטטוס</th>
+            <th>צוות</th>
+            <th>אחראי</th>
+            {% if user.person.role == 'admin' %}
+                <th>פעולות מנהל</th>
+            {% endif %}
+        </tr>
     </thead>
     <tbody>
-    {% for task in tasks %}
-    {% if user.person.team == task.team %}
-    <tr>
-        <td>{{ task.title }}</td>
-        <td>{{ task.description }}</td>
-        <td>{{ task.date_end }}</td>
-        <td>
-            {{ task.status }}
-            <form method="POST" action="{% url 'update_task_status' task.id %}">
-                {% csrf_token %}
-                <select name="status">
-                    <option value="new"{% if task.status == "new" %} selected{% endif %}>new</option>
-                    <option value="in_progress"{% if task.status == "in_progress" %} selected{% endif %}>in_progress</option>
-                    <option value="completed"{% if task.status == "completed" %} selected{% endif %}>completed</option>
-                </select>
-                <button type="submit" class="btn btn-primary">עדכן סטטוס</button>
-            </form>
-        </td>
-        <td>{{ task.team }}</td>
-        {% if task.Executor != None %}
-            <td>{{ task.Executor }}</td>
-        {% else %}
-            <td> {% if user.person.role == 'admin' %}
-                <form action="{% url 'update_task_executor' task.id %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit">Assing task for me</button>
-            </form>
-            {% endif %}
+        {% for task in tasks %}
+        {% if user.person.team == task.team %}
+        <tr>
+            <td>{{ task.title }}</td>
+            <td>{{ task.description }}</td>
+            <td>{{ task.date_end }}</td>
+            <td>
+                {{ task.status }}
+                <form method="POST" action="{% url 'update_task_status' task.id %}">
+                    {% csrf_token %}
+                    <select name="status" class="form-control">
+                        <option value="new" {% if task.status == "new" %} selected {% endif %}>חדש</option>
+                        <option value="in_progress" {% if task.status == "in_progress" %} selected {% endif %}>בתהליך</option>
+                        <option value="completed" {% if task.status == "completed" %} selected {% endif %}>הושלם</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">עדכן סטטוס</button>
+                </form>
             </td>
+            <td>{{ task.team }}</td>
+            <td>
+                {% if task.Executor %}
+                    {{ task.Executor }}
+                {% else %}
+                    {% if user.person.role == 'admin' %}
+                        <form action="{% url 'update_task_executor' task.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">Assign task to me</button>
+                        </form>
+                    {% endif %}
+                </td>
+            {% endif %}
+            {% if user.person.role == 'admin' %}
+            <td>
+                <a href="{% url 'editTask' task.id %}" class="btn btn-info">Edit</a>
+                <form method="POST" action="{% url 'delete_task' task.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </td>
+            {% endif %}
+        </tr>
         {% endif %}
-        {% if user.person.role == 'admin' %}
-        <td>
-            <a href="{% url 'editTask' task.id %}" class="btn btn-info">Edit</a>
-           <form method="POST" action="{% url 'delete_task' task.id %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
-        </td>
-        {% endif %}
-    </tr>
-    {% endif %}
-    {% endfor %}
-    {% if messages %}
-    {% endif %}
+        {% endfor %}
     </tbody>
 </table>
 

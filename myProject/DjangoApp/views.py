@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+from django.db import connection
 
 from .forms import PersonForm , TaskForm
 from .models import Task, Team, Person
@@ -153,14 +154,58 @@ from django.shortcuts import render
 from .models import Task
 
 @login_required
-def filter_by_status(request):
-    status_filter = request.GET.get('status')
-    tasks = Task.objects.all()
-    if status_filter:
-        tasks = tasks.filter(status=status_filter)
+def TaskFilterByStatus(request):
+     if request.method == "POST":
+         selected_status = request.POST.get('status')
+         if selected_status == 'all':
+             return redirect('tasks')
+         filtered_tasks = Task.objects.filter(status=selected_status)
+         return render(request, 'tasks.html', {'tasks': filtered_tasks})
+     return redirect('tasks')
 
-    context = {
-        'tasks': tasks,
-    }
 
-    return render(request, 'tasks.html', context)
+# def employee_list(request):
+#     form = PersonForm(request.GET or None)
+#     executor = Task.objects.all()
+#
+#     # קבלת שם המשתמש (username) מתוך ה-GET
+#     name = request.GET.get('name', None)
+#
+#     if name:
+#         # סינון לפי שם המשתמש של ה-Executor (User)
+#         executor = executor.filter(Executor__user__username__icontains=name)
+#
+#     # סינון לפי סטטוס (אם זה קיים)
+#     status = request.GET.get('status', None)
+#     if status and status != 'all':
+#         executor = executor.filter(status=status)
+#
+#     return render(request, 'tasks.html', {'form': form, 'executor': executor})
+def filter(request):
+    user = request.user
+    try:
+        person = user.person  # מניח שהמשתמש תמיד מקושר ל-Person
+        role = person.role  # מקבלים את ה-role מתוך Person
+    except Person.DoesNotExist:
+        role = None  # אם אין קשר בין User ל-Person
+        # במקרה כזה תוכל להוסיף טיפול בשגיאה או הצגת הודעה מתאימה
+
+    persons = Person.objects.all()  # כל העובדים
+    tasks_qs = Task.objects.all()  # כל המשימות
+
+    # סינון לפי סטטוס
+    status = request.GET.get('status')
+    if status and status != 'all':
+        tasks_qs = tasks_qs.filter(status=status)
+
+    # סינון לפי עובד (אם נבחר עובד מסוים)
+    person = request.GET.get('employee')
+    if person:
+        tasks_qs = tasks_qs.filter(Executor__id=person)
+
+    return render(request, 'tasks.html', {
+        'user': user,
+        'role': role,
+        'tasks': tasks_qs,
+        'employees': persons,  # להעביר את כל העובדים (Person)
+    })

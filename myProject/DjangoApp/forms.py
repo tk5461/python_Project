@@ -24,3 +24,5 @@ class TaskForm(forms.ModelForm):
         if team:
             self.fields['team'].initial = team
             # self.fields['team'].widget.attrs['disabled'] = 'disabled'
+
+

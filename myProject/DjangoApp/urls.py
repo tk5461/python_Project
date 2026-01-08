@@ -13,7 +13,9 @@ urlpatterns = [
     path('update_task_status/<int:id>/', views.update_task_status, name='update_task_status'),
     path('update_task_executor/<int:id>/', views.update_task_executor, name='update_task_executor'),
     path('update_task/<int:id>/', views.update_task_executor, name='update_task_executor'),
-    path('tasks/', views.filter_by_status, name='filter_by_status'),
+    # path('filter_tasks_By_Status/', views.TaskFilterByStatus, name='filter_tasks_By_Status'),
+    # path('filter_tasks_By_executor/', views.filter, name='filter_tasks_By_executor')
+    path('filter/', views.filter, name='filter_tasks_By_Status')
 
 ]
 
