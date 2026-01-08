@@ -1,37 +1,144 @@
-
 {% extends 'base.html' %}
 {% load static %}
-{% block content %}
 
-<html lang="he">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>הוספת משימה חדשה</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container">
-    <h1>Add Task</h1>
-    <form method="POST">
-        {% csrf_token %}
-        {% for field in form %}
-            <div class="form-group">
-                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {{ field }}
-                {% if field.help_text %}
-                    <small class="form-text text-muted">{{ field.help_text }}</small>
-                {% endif %}
-                {% for error in field.errors %}
-                    <div class="text-danger">{{ error }}</div>
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    .main-wrapper {
+        width: 100%;
+        max-width: 100% !important;
+        padding: 20px; /* צמצום פדינג חיצוני */
+        background-color: #f8fafc;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* כרטיס טופס קומפקטי */
+    .form-card {
+        background: white;
+        padding: 20px 30px; /* צמצום פדינג פנימי */
+        border-radius: 12px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 700px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .form-header {
+        margin-bottom: 15px;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 10px;
+    }
+
+    .form-header h1 {
+        font-weight: 800;
+        color: #1e293b;
+        font-size: 1.4rem; /* הקטנת כותרת */
+        margin: 0;
+    }
+
+    /* תצוגת גריד לשדות כדי לחסוך גובה */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 12px 20px; /* מרווח קטן בין שדות */
+    }
+
+    .form-group label {
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 4px;
+        font-size: 0.85rem; /* פונט קטן יותר ללייבל */
+        display: block;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 8px 12px !important; /* שדות נמוכים יותר */
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+        font-size: 0.9rem;
+        margin-bottom: 0;
+    }
+
+    /* שדה תיאור (textarea) תמיד יתפוס שורה שלמה */
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    textarea {
+        height: 80px; /* גובה מוגבל לתיאור */
+    }
+
+    .btn-submit {
+        background: #4f46e5;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        font-weight: 700;
+        width: 100%;
+        margin-top: 15px;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .btn-back {
+        display: inline-block;
+        margin-top: 10px;
+        color: #64748b;
+        text-decoration: none;
+        font-size: 0.85rem;
+    }
+
+    /* הודעות שגיאה קטנות */
+    .text-danger { font-size: 0.75rem; margin-top: 2px; }
+</style>
+
+<div class="main-wrapper">
+    <div class="form-card">
+        <div class="form-header">
+            <h1><i class="fas fa-plus-circle text-primary me-2"></i> הוספת משימה</h1>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-grid">
+                {% for field in form %}
+                    <div class="form-group {% if field.name == 'description' %}full-width{% endif %}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <div class="text-danger fw-bold">{{ error }}</div>
+                        {% endfor %}
+                    </div>
                 {% endfor %}
             </div>
-        {% endfor %}
 
-        <button type="submit" class="btn btn-primary">Add Task</button>
-    </form>
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-save me-1"></i> שמור משימה
+            </button>
+        </form>
+
+        <div class="text-center">
+            <a href="{% url 'tasks' %}" class="btn-back">
+                <i class="fas fa-arrow-right me-1"></i> ביטול וחזרה
+            </a>
+        </div>
+    </div>
 </div>
-</body>
-</html>
+
+<script>
+    // העלמה אוטומטית של הודעות (אם יש)
+    document.addEventListener("DOMContentLoaded", function() {
+        const alerts = document.querySelectorAll('.custom-alert');
+        alerts.forEach(alert => {
+            setTimeout(() => alert.remove(), 2000);
+        });
+    });
+</script>
 
 {% endblock %}

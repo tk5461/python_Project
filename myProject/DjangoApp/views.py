@@ -66,10 +66,6 @@ def logout_view(request):
     return redirect("home")
 
 
-@login_required
-def all_task(request):
-    tasks = Task.objects.all()
-    return render(request, 'tasks.html', {'tasks': tasks})
 
 @login_required
 def add_task(request):
@@ -181,31 +177,35 @@ def TaskFilterByStatus(request):
 #         executor = executor.filter(status=status)
 #
 #     return render(request, 'tasks.html', {'form': form, 'executor': executor})
-def filter(request):
-    user = request.user
-    try:
-        person = user.person  # מניח שהמשתמש תמיד מקושר ל-Person
-        role = person.role  # מקבלים את ה-role מתוך Person
-    except Person.DoesNotExist:
-        role = None  # אם אין קשר בין User ל-Person
-        # במקרה כזה תוכל להוסיף טיפול בשגיאה או הצגת הודעה מתאימה
+#@login_required
+#def all_task(request):
+#   tasks = Task.objects.all()
+#    return render(request, 'tasks.html', {'tasks': tasks})
 
-    persons = Person.objects.all()  # כל העובדים
-    tasks_qs = Task.objects.all()  # כל המשימות
+@login_required
+def all_task(request):
+    # 1. קבלת המשתמש המחובר והצוות שלו
+    user_person = request.user.person
+    user_team = user_person.team
 
-    # סינון לפי סטטוס
-    status = request.GET.get('status')
-    if status and status != 'all':
-        tasks_qs = tasks_qs.filter(status=status)
+    # 2. שליפת משימות השייכות לצוות של המשתמש בלבד
+    tasks = Task.objects.filter(team=user_team)
 
-    # סינון לפי עובד (אם נבחר עובד מסוים)
-    person = request.GET.get('employee')
-    if person:
-        tasks_qs = tasks_qs.filter(Executor__id=person)
+    # 3. קבלת ערכי הסינון מה-URL
+    status_filter = request.GET.get('status_filter')
+    executor_filter = request.GET.get('executor_filter')
+
+    # 4. החלת הסינונים (אם נבחרו)
+    if status_filter and status_filter != "":
+        tasks = tasks.filter(status=status_filter)
+
+    if executor_filter and executor_filter != "":
+        tasks = tasks.filter(Executor_id=executor_filter)
+
+    # 5. שליפת חברי הצוות הנוכחי בלבד עבור ה-Dropdown
+    team_members = Person.objects.filter(team=user_team)
 
     return render(request, 'tasks.html', {
-        'user': user,
-        'role': role,
-        'tasks': tasks_qs,
-        'employees': persons,  # להעביר את כל העובדים (Person)
+        'tasks': tasks,
+        'team_members': team_members,
     })
