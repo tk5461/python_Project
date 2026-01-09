@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    .main-wrapper {
+        width: 100%;
+        max-width: 100% !important;
+        padding: 20px;
+        background-color: #f8fafc;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* כרטיס עריכה קומפקטי */
+    .form-card {
+        background: white;
+        padding: 20px 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 750px; 
+        border: 1px solid #e2e8f0;
+    }
+
+    .form-header {
+        margin-bottom: 15px;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .form-header h1 {
+        font-weight: 800;
+        color: #1e293b;
+        font-size: 1.4rem;
+        margin: 0;
+    }
+
+    /* סידור צפוף בשתי עמודות */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 10px 20px;
+    }
+
+    .form-group label {
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 3px;
+        font-size: 0.85rem;
+        display: block;
+    }
+
+    /* עיצוב אחיד לשדות */
+    input, select, textarea {
+        width: 100%;
+        padding: 8px 12px !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        font-size: 0.9rem;
+        transition: 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        border-color: #4f46e5 !important;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1) !important;
+        outline: none;
+    }
+
+    /* שדה תיאור תופס שורה שלמה וגובה מוגבל */
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    textarea {
+        height: 70px;
+        resize: vertical;
+    }
+
+    .btn-save {
+        background: #4f46e5;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 8px;
+        font-weight: 700;
+        width: 100%;
+        margin-top: 15px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-save:hover {
+        background: #4338ca;
+    }
+
+    .btn-cancel {
+        display: inline-block;
+        margin-top: 12px;
+        color: #64748b;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .btn-cancel:hover {
+        color: #ef4444;
+    }
+</style>
+
+<div class="main-wrapper">
+    <div class="form-card">
+        <div class="form-header">
+            <h1><i class="fas fa-edit text-primary me-2"></i> עריכת משימה</h1>
+            <span class="badge bg-light text-muted border">ID: {{ task_id }}</span>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-grid">
+                {% for field in form %}
+                    <div class="form-group {% if field.name == 'description' %}full-width{% endif %}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <p class="text-danger small fw-bold mb-0">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn-save">
+                <i class="fas fa-check-circle me-1"></i> שמור שינויים
+            </button>
+        </form>
+
+        <div class="text-center">
+            <a href="{% url 'tasks' %}" class="btn-cancel">
+                <i class="fas fa-times me-1"></i> ביטול וחזרה
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
