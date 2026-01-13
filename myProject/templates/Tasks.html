@@ -5,69 +5,27 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
-    /* פריסה ועיצוב כללי */
+    :root {
+        --sky-blue: #0ea5e9;
+        --sky-light: #e0f2fe;
+        --rose-pink: #f43f5e;
+        --rose-light: #fff1f2;
+        --text-dark: #1e293b;
+    }
+
     .main-wrapper {
         width: 100%;
         max-width: 100% !important;
-        padding: 20px 40px;
+        padding: 30px 50px;
         background-color: #f8fafc;
         min-height: 100vh;
         direction: rtl;
     }
 
-    /* עיצוב סרגל הסינון */
-    .filter-bar {
-        background: white;
-        padding: 15px 25px;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        margin-bottom: 25px;
-        border: 1px solid #e2e8f0;
-    }
-
-    .filter-label {
-        font-weight: 800;
-        color: #1e293b;
-        margin-left: 10px;
-    }
-
-    .filter-select {
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 8px !important;
-        padding: 6px 12px !important;
-        font-size: 0.9rem;
-        cursor: pointer;
-    }
-
-    /* הודעות קופצות */
-    .alert-messages {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 1000;
-        min-width: 300px;
-    }
-
-    .custom-alert {
-        background: #d1e7dd;
-        color: #0f5132;
-        border: 1px solid #badbcc;
-        padding: 12px 20px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-weight: 600;
-        animation: fadeInDown 0.4s ease-out, fadeOut 0.5s ease-in 1.5s forwards;
-    }
-
-    /* עיצוב הטבלה */
     .table-container {
         background: white;
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        width: 100%;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
         border: 1px solid #e2e8f0;
         overflow: hidden;
     }
@@ -78,175 +36,188 @@
     }
 
     .custom-table th {
-        background-color: #f1f5f9;
-        color: #475569;
+        background-color: #f8fafc;
+        color: #64748b;
         font-weight: 700;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 0.5px;
-    }
-
-    .custom-table th, .custom-table td {
-        padding: 18px 20px;
-        border-bottom: 1px solid #f1f5f9;
+        padding: 20px;
+        border-bottom: 2px solid #edf2f7;
         text-align: right;
     }
 
-    .status-select-cell {
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 8px !important;
-        padding: 8px 10px !important;
-        width: 130px;
+    .custom-table td {
+        padding: 20px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    /* עיצוב עמודת צוות */
+    .team-badge {
+        color: var(--sky-blue);
+        background: var(--sky-light);
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    .status-in-progress {
+        color: var(--rose-pink);
+        font-weight: 800;
+        text-decoration: underline;
+        text-underline-offset: 5px;
+        text-decoration-thickness: 2px;
+        margin-left: 15px;
+        font-size: 0.95rem;
+    }
+
+    .btn-glow-sky {
+        background-color: var(--sky-blue);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 8px 20px;
         font-weight: 600;
-        appearance: none;
-        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 14px 0 rgba(14, 165, 233, 0.3);
+    }
+
+    .btn-glow-sky:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45);
+        background-color: #0284c7;
+    }
+
+    .badge-new {
+        background-color: var(--sky-light);
+        color: var(--sky-blue);
+        padding: 6px 15px;
+        border-radius: 12px;
+        font-weight: 700;
+        border: 1px solid var(--sky-blue);
+        font-size: 0.85rem;
+    }
+
+    .badge-final-success {
+        background-color: #ecfdf5;
+        color: #10b981;
+        padding: 8px 18px;
+        border-radius: 30px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border: 1px solid #a7f3d0;
     }
 
     .btn-action {
-        padding: 8px 12px;
-        border-radius: 8px;
+        padding: 10px;
+        border-radius: 10px;
+        background: #f8fafc;
+        color: #64748b;
         border: 1px solid #e2e8f0;
-        background: white;
         transition: 0.2s;
+        text-decoration: none;
     }
 
-    .btn-action:hover { background: #f8fafc; }
-
-    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
+    .btn-action:hover {
+        background: var(--sky-light);
+        color: var(--sky-blue);
+    }
 </style>
 
 <div class="main-wrapper">
-
-    <div class="alert-messages">
-        {% if messages %}
+    {% if messages %}
+        <div class="alert-messages">
             {% for message in messages %}
-                <div class="custom-alert">
-                    <i class="fas fa-check-circle"></i>
-                    {{ message }}
+                <div class="alert alert-success shadow-sm" style="border-radius: 15px; direction: rtl; border-right: 5px solid var(--sky-blue);">
+                    <i class="fas fa-check-circle ms-2 text-info"></i> {{ message }}
                 </div>
             {% endfor %}
-        {% endif %}
-    </div>
+        </div>
+    {% endif %}
 
-    <div class="dashboard-header d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0"><i class="fas fa-tasks text-primary me-2"></i> ניהול משימות צוותי</h1>
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="fw-bold text-dark"><i class="fas fa-tasks text-info me-2"></i> ניהול משימות הצוות</h2>
         {% if user.person.role == 'admin' %}
-            <a href="{% url 'addTask' %}" class="btn btn-primary shadow-sm" style="border-radius: 10px; font-weight: 600;">
+            <a href="{% url 'addTask' %}" class="btn px-4 py-2 shadow-sm" style="border-radius: 12px; background-color: var(--sky-blue); color: white; font-weight: 700;">
                 <i class="fas fa-plus ms-2"></i> משימה חדשה
             </a>
         {% endif %}
-    </div>
-
-    <div class="filter-bar">
-        <form method="GET" class="row g-3 align-items-center">
-            <div class="col-auto">
-                <span class="filter-label"><i class="fas fa-filter text-muted me-1"></i> סנן לפי:</span>
-            </div>
-
-            <div class="col-auto d-flex align-items-center gap-2">
-                <label class="small text-secondary">מבצע:</label>
-                <select name="executor_filter" class="form-select filter-select" onchange="this.form.submit()">
-                    <option value="">כל חברי הצוות</option>
-                    {% for member in team_members %}
-                        {% if member.team == user.person.team %}
-                            <option value="{{ member.id }}" {% if request.GET.executor_filter == member.id|stringformat:"s" %}selected{% endif %}>
-                                {{ member.user.username }}
-                            </option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="col-auto d-flex align-items-center gap-2">
-                <label class="small text-secondary">סטטוס:</label>
-                <select name="status_filter" class="form-select filter-select" onchange="this.form.submit()">
-                    <option value="">כל הסטטוסים</option>
-                    <option value="new" {% if request.GET.status_filter == "new" %}selected{% endif %}>חדש</option>
-                    <option value="in_progress" {% if request.GET.status_filter == "in_progress" %}selected{% endif %}>בביצוע</option>
-                    <option value="completed" {% if request.GET.status_filter == "completed" %}selected{% endif %}>הושלם</option>
-                </select>
-            </div>
-
-            {% if request.GET.executor_filter or request.GET.status_filter %}
-            <div class="col-auto">
-                <a href="?" class="btn btn-link btn-sm text-decoration-none text-danger fw-bold">נקה סינונים</a>
-            </div>
-            {% endif %}
-        </form>
     </div>
 
     <div class="table-container">
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>כותרת</th>
-                    <th>תיאור</th>
-                    <th>תאריך יעד</th>
-                    <th>צוות</th>
-                    <th>מבצע המשימה</th>
-                    <th>סטטוס</th>
-                    <th class="text-center">פעולות</th>
+                    <th style="width: 15%;">משימה</th>
+                    <th style="width: 20%;">תיאור</th>
+                    <th style="width: 10%;" class="text-center">צוות</th> <th style="width: 12%;">תאריך יעד</th>
+                    <th style="width: 12%;">אחראי</th>
+                    <th class="text-center" style="width: 23%;">סטטוס ופעולה</th>
+                    <th class="text-center">ניהול</th>
                 </tr>
             </thead>
             <tbody>
                 {% for task in tasks %}
                 <tr>
-                    <td><span class="fw-bold text-dark">{{ task.title }}</span></td>
-                    <td style="max-width: 250px;"><span class="text-muted small">{{ task.description|truncatechars:45 }}</span></td>
-                    <td><span class="text-secondary"><i class="far fa-calendar-alt me-1"></i> {{ task.date_end|date:"d/m/Y" }}</span></td>
-                    <td><span class="badge bg-light text-primary border">{{ task.team }}</span></td>
+                    <td><span class="fw-bold" style="font-size: 1.05rem;">{{ task.title }}</span></td>
+                    <td><span class="text-muted small">{{ task.description|truncatechars:40 }}</span></td>
+
+                    <td class="text-center">
+                        {% if task.team %}
+                            <span class="team-badge">{{ task.team }}</span>
+                        {% else %}
+                            <span class="text-muted small">---</span>
+                        {% endif %}
+                    </td>
+
+                    <td><span class="text-secondary fw-semibold"><i class="far fa-calendar-alt ms-1"></i> {{ task.date_end|date:"d/m/Y" }}</span></td>
 
                     <td>
                         {% if task.Executor %}
-                            <div class="d-flex align-items-center">
-                                <div class="bg-primary text-white rounded-circle ms-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 0.75rem;">
-                                    {{ task.Executor.user.username|slice:":1"|upper }}
-                                </div>
-                                <span class="small fw-semibold">{{ task.Executor.user.username }}</span>
-                            </div>
+                            <span class="fw-bold text-dark">{{ task.Executor.user.username }}</span>
                         {% else %}
                             <form action="{% url 'update_task_executor' task.id %}" method="post">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-success py-1 px-3">קח לביצוע</button>
+                                <button type="submit" class="btn btn-sm btn-outline-info fw-bold" style="border-radius: 10px;">קח לביצוע</button>
                             </form>
                         {% endif %}
                     </td>
 
-                    <td>
-                        <form method="POST" action="{% url 'update_task_status' task.id %}" class="d-flex gap-1 align-items-center">
-                            {% csrf_token %}
-                            <select name="status" class="status-select-cell">
-                                <option value="new" {% if task.status == "new" %} selected {% endif %}>חדש</option>
-                                <option value="in_progress" {% if task.status == "in_progress" %} selected {% endif %}>בביצוע</option>
-                                <option value="completed" {% if task.status == "completed" %} selected {% endif %}>הושלם</option>
-                            </select>
-                            <button type="submit" class="btn btn-sm btn-primary py-1"><i class="fas fa-save"></i></button>
-                        </form>
+                    <td class="text-center">
+                        {% if not task.Executor %}
+                            <span class="badge-new">ממתין</span>
+                        {% elif task.status == "in_progress" %}
+                            <div class="d-flex align-items-center justify-content-center">
+                                <span class="status-in-progress">בביצוע</span>
+                                <form method="POST" action="{% url 'update_task_status' task.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-glow-sky">
+                                        סיום <i class="fas fa-check"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        {% elif task.status == "completed" %}
+                            <span class="badge-final-success">
+                                בוצע בהצלחה <i class="fas fa-check-double"></i>
+                            </span>
+                        {% endif %}
                     </td>
 
-                    <td>
+                    <td class="text-center">
                         <div class="d-flex gap-2 justify-content-center">
                             {% if user.person.role == 'admin' %}
-                                <a href="{% url 'editTask' task.id %}" class="btn-action text-info" title="עריכה"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'editTask' task.id %}" class="btn-action" title="ערוך"><i class="fas fa-pen"></i></a>
                                 <form method="POST" action="{% url 'delete_task' task.id %}" style="display:inline;">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn-action text-danger" onclick="return confirm('האם למחוק את המשימה לצמיתות?')" title="מחיקה">
+                                    <button type="submit" class="btn-action text-danger" onclick="return confirm('למחוק?')">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
-                            {% else %}
-                                <span class="badge bg-secondary opacity-50 fw-normal">צפייה בלבד</span>
                             {% endif %}
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="7" class="text-center py-5">
-                        <div class="text-muted">
-                            <i class="fas fa-clipboard-list fa-3x mb-3 opacity-20"></i>
-                            <p>לא נמצאו משימות העונות על הקריטריונים.</p>
                         </div>
                     </td>
                 </tr>
@@ -255,13 +226,4 @@
         </table>
     </div>
 </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const alerts = document.querySelectorAll('.custom-alert');
-        alerts.forEach(alert => {
-            setTimeout(() => { alert.remove(); }, 2800);
-        });
-    });
-</script>
 {% endblock %}

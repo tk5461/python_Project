@@ -114,20 +114,20 @@ def edit_task(request, task_id):
 
     return render(request, 'editTask.html', {'form': form, 'task': task})
 
+
+@login_required
 @login_required
 def update_task_status(request, id):
     task = get_object_or_404(Task, pk=id)
 
     if request.method == "POST":
-        new_status = request.POST.get('status')
-        task.status = new_status
+        # ברגע לחיצה על הכפתור - הסטטוס הופך ל-completed
+        task.status = "completed"
         task.save()
-        messages.success(request, "הסטטוס שונה בהצלחה.")
-        return redirect('tasks')
-
+        messages.success(request, "המשימה הושלמה בהצלחה!")
     return redirect('tasks')
 
-
+    return redirect('tasks')
 @login_required
 def update_task_executor(request, id):
     task = get_object_or_404(Task, pk=id)
@@ -139,10 +139,11 @@ def update_task_executor(request, id):
             return redirect('tasks')
 
         task.Executor = person
+        # ברגע שיש משתמש - הסטטוס הופך אוטומטית ל-in_progress
+        task.status = "in_progress"
         task.save()
-        messages.success(request, "המשימה הוקצתה בהצלחה.")
+        messages.success(request, "המשימה שויכה אליך והיא כעת בביצוע.")
         return redirect('tasks')
-
     return redirect('tasks')
 
 from django.contrib.auth.decorators import login_required
