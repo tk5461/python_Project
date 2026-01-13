@@ -182,7 +182,6 @@ def TaskFilterByStatus(request):
 #def all_task(request):
 #   tasks = Task.objects.all()
 #    return render(request, 'tasks.html', {'tasks': tasks})
-
 @login_required
 def all_task(request):
     # 1. קבלת המשתמש המחובר והצוות שלו
@@ -192,18 +191,18 @@ def all_task(request):
     # 2. שליפת משימות השייכות לצוות של המשתמש בלבד
     tasks = Task.objects.filter(team=user_team)
 
-    # 3. קבלת ערכי הסינון מה-URL
-    status_filter = request.GET.get('status_filter')
-    executor_filter = request.GET.get('executor_filter')
+    # 3. קבלת ערכי הסינון מה-GET (שימוש בשמות מה-HTML המעודכן)
+    status_filter = request.GET.get('status')
+    executor_filter = request.GET.get('executor')
 
-    # 4. החלת הסינונים (אם נבחרו)
+    # 4. החלת הסינונים
     if status_filter and status_filter != "":
         tasks = tasks.filter(status=status_filter)
 
     if executor_filter and executor_filter != "":
         tasks = tasks.filter(Executor_id=executor_filter)
 
-    # 5. שליפת חברי הצוות הנוכחי בלבד עבור ה-Dropdown
+    # 5. שליפת חברי הצוות הנוכחי עבור ה-Select
     team_members = Person.objects.filter(team=user_team)
 
     return render(request, 'tasks.html', {
