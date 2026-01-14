@@ -121,7 +121,6 @@ def update_task_status(request, id):
     task = get_object_or_404(Task, pk=id)
 
     if request.method == "POST":
-        # ברגע לחיצה על הכפתור - הסטטוס הופך ל-completed
         task.status = "completed"
         task.save()
         messages.success(request, "המשימה הושלמה בהצלחה!")
@@ -139,7 +138,6 @@ def update_task_executor(request, id):
             return redirect('tasks')
 
         task.Executor = person
-        # ברגע שיש משתמש - הסטטוס הופך אוטומטית ל-in_progress
         task.status = "in_progress"
         task.save()
         messages.success(request, "המשימה שויכה אליך והיא כעת בביצוע.")
@@ -160,49 +158,22 @@ def TaskFilterByStatus(request):
          return render(request, 'tasks.html', {'tasks': filtered_tasks})
      return redirect('tasks')
 
-
-# def employee_list(request):
-#     form = PersonForm(request.GET or None)
-#     executor = Task.objects.all()
-#
-#     # קבלת שם המשתמש (username) מתוך ה-GET
-#     name = request.GET.get('name', None)
-#
-#     if name:
-#         # סינון לפי שם המשתמש של ה-Executor (User)
-#         executor = executor.filter(Executor__user__username__icontains=name)
-#
-#     # סינון לפי סטטוס (אם זה קיים)
-#     status = request.GET.get('status', None)
-#     if status and status != 'all':
-#         executor = executor.filter(status=status)
-#
-#     return render(request, 'tasks.html', {'form': form, 'executor': executor})
-#@login_required
-#def all_task(request):
-#   tasks = Task.objects.all()
-#    return render(request, 'tasks.html', {'tasks': tasks})
 @login_required
 def all_task(request):
-    # 1. קבלת המשתמש המחובר והצוות שלו
     user_person = request.user.person
     user_team = user_person.team
 
-    # 2. שליפת משימות השייכות לצוות של המשתמש בלבד
     tasks = Task.objects.filter(team=user_team)
 
-    # 3. קבלת ערכי הסינון מה-GET (שימוש בשמות מה-HTML המעודכן)
     status_filter = request.GET.get('status')
     executor_filter = request.GET.get('executor')
 
-    # 4. החלת הסינונים
     if status_filter and status_filter != "":
         tasks = tasks.filter(status=status_filter)
 
     if executor_filter and executor_filter != "":
         tasks = tasks.filter(Executor_id=executor_filter)
 
-    # 5. שליפת חברי הצוות הנוכחי עבור ה-Select
     team_members = Person.objects.filter(team=user_team)
 
     return render(request, 'tasks.html', {

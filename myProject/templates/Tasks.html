@@ -2,137 +2,10 @@
 {% load static %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'tasks.css' %}">
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-<style>
-    :root {
-        --sky-blue: #0ea5e9;
-        --sky-light: #e0f2fe;
-        --rose-pink: #f43f5e;
-        --text-dark: #1e293b;
-        --success-green: #22c55e;
-    }
-
-    /* עיצוב להודעות קופצות */
-    .alert-messages-container {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 1000;
-        width: auto;
-        min-width: 300px;
-        text-align: center;
-    }
-
-    .custom-alert {
-        padding: 15px 25px;
-        border-radius: 12px;
-        margin-bottom: 10px;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        animation: slideDown 0.5s ease-out;
-        border: none;
-    }
-
-    .alert-success { background-color: var(--success-green); color: white; }
-    .alert-error { background-color: var(--rose-pink); color: white; }
-    .alert-info { background-color: var(--sky-blue); color: white; }
-
-    @keyframes slideDown {
-        from { transform: translateY(-100%); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-
-    .main-wrapper {
-        width: 100%;
-        padding: 30px 50px;
-        background-color: #f8fafc;
-        min-height: 100vh;
-        direction: rtl;
-    }
-
-    /* סרגל סינון משודרג */
-    .filter-bar-container {
-        background-color: #f4ffff;
-        padding: 20px 30px;
-        margin-bottom: 30px;
-        box-shadow: 0 8px 20px rgba(14, 165, 233, 0.6);
-    }
-
-    .filter-form {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        gap: 35px;
-        flex-wrap: wrap;
-    }
-
-    .filter-item {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .filter-item label {
-        font-weight: 800;
-        color: var(--text-dark);
-        font-size: 1.1rem;
-        margin: 0;
-        white-space: nowrap;
-    }
-
-    .filter-select {
-        border-radius: 12px;
-        border: 2px solid #e2e8f0;
-        padding: 10px 18px;
-        background-color: white;
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--text-dark);
-        outline: none;
-        min-width: 200px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .filter-select:hover { border-color: var(--sky-blue); }
-    .filter-select:focus { border-color: var(--sky-blue); box-shadow: 0 0 0 4px var(--sky-light); }
-
-    .clear-filter-btn {
-        background-color: white;
-        color: var(--rose-pink);
-        border: 1px solid var(--rose-pink);
-        padding: 8px 15px;
-        border-radius: 10px;
-        font-weight: 700;
-        text-decoration: none;
-        font-size: 0.9rem;
-        transition: all 0.2s;
-    }
-
-    .clear-filter-btn:hover { background-color: var(--rose-pink); color: white; }
-
-    .table-container {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
-        border: 1px solid #e2e8f0;
-        overflow: hidden;
-    }
-
-    .custom-table { width: 100%; border-collapse: collapse; }
-    .custom-table th { background: #f8fafc; color: #64748b; padding: 20px; text-align: right; font-size: 1rem; border-bottom: 2px solid #edf2f7; }
-    .custom-table td { padding: 20px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-
-    .team-badge { color: var(--sky-blue); background: var(--sky-light); padding: 5px 12px; border-radius: 8px; font-weight: 700; }
-    .status-in-progress { color: var(--rose-pink); font-weight: 800; text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
-    .btn-glow-sky { background: var(--sky-blue); color: white; border: none; border-radius: 30px; padding: 8px 20px; font-weight: 600; box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3); cursor: pointer;}
-</style>
 
 <div class="alert-messages-container">
     {% if messages %}
@@ -150,7 +23,7 @@
     <div class="d-flex justify-content-between align-items-center mb-5">
         <h2 class="fw-bold text-dark m-0">
             <i class="fas fa-clipboard-list text-info me-2"></i>
-            משימות צוות: <span style="color: var(--sky-blue);">{{ user.person.team.name }}</span>
+            משימות צוות : <span style="color: var(--sky-blue);">{{ user.person.team.name }}</span>
         </h2>
         {% if user.person.role == 'admin' %}
             <a href="{% url 'addTask' %}" class="btn px-4 py-2 shadow-sm" style="background: var(--sky-blue); color: white; border-radius: 12px; font-weight: 700;">
