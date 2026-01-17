@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'tasks.css' %}">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+
+<div class="alert-messages-container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="custom-alert alert-{{ message.tags }}">
+                {% if message.tags == 'success' %}<i class="fas fa-check-circle"></i>{% endif %}
+                {% if message.tags == 'error' %}<i class="fas fa-exclamation-triangle"></i>{% endif %}
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<div class="main-wrapper">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="fw-bold text-dark m-0">
+            <i class="fas fa-clipboard-list text-info me-2"></i>
+            משימות צוות : <span style="color: var(--sky-blue);">{{ user.person.team.name }}</span>
+        </h2>
+        {% if user.person.role == 'admin' %}
+            <a href="{% url 'addTask' %}" class="btn px-4 py-2 shadow-sm" style="background: var(--sky-blue); color: white; border-radius: 12px; font-weight: 700;">
+                <i class="fas fa-plus ms-2"></i> משימה חדשה
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="filter-bar-container">
+        <form method="GET" action="" class="filter-form" id="filterForm">
+            <div class="filter-item">
+                <label><i class="fas fa-user-friends ms-2"></i> סינון לפי עובד:</label>
+                <select name="executor" class="filter-select" onchange="this.form.submit()">
+                    <option value="">-- כל חברי הצוות --</option>
+                    {% for person in team_members %}
+                        <option value="{{ person.id }}" {% if request.GET.executor == person.id|stringformat:"i" %}selected{% endif %}>
+                            {{ person.user.username }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-item">
+                <label><i class="fas fa-tasks ms-2"></i> סינון לפי סטטוס:</label>
+                <select name="status" class="filter-select" onchange="this.form.submit()">
+                    <option value="">-- כל הסטטוסים --</option>
+                    <option value="new" {% if request.GET.status == "new" %}selected{% endif %}>חדש </option>
+                    <option value="in_progress" {% if request.GET.status == "in_progress" %}selected{% endif %}>בתהליך פעיל</option>
+                    <option value="completed" {% if request.GET.status == "completed" %}selected{% endif %}>הושלם בהצלחה</option>
+                </select>
+            </div>
+
+            {% if request.GET.status or request.GET.executor %}
+                <div class="ms-auto">
+                    <a href="{% url 'tasks' %}" class="clear-filter-btn">
+                        <i class="fas fa-undo-alt me-1"></i> איפוס סינונים
+                    </a>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>משימה</th>
+                    <th>תיאור</th>
+                    <th class="text-center">צוות</th>
+                    <th>תאריך יעד</th>
+                    <th>אחראי</th>
+                    <th class="text-center">סטטוס ופעולה</th>
+                    <th class="text-center">ניהול</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td><span class="fw-bold" style="font-size: 1.1rem;">{{ task.title }}</span></td>
+                    <td><span class="text-muted">{{ task.description|truncatechars:40 }}</span></td>
+                    <td class="text-center"><span class="team-badge">{{ task.team }}</span></td>
+                    <td><span class="text-secondary fw-bold"><i class="far fa-calendar-alt ms-1"></i> {{ task.date_end|date:"d/m/Y" }}</span></td>
+                    <td>
+                        {% if task.Executor %}
+                            <span class="fw-bold text-dark">{{ task.Executor.user.username }}</span>
+                        {% else %}
+                            <form action="{% url 'update_task_executor' task.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-info fw-bold">קח לביצוע</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if not task.Executor %}
+                            <span class="badge-new" style="background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; padding: 6px 15px; border-radius: 12px; font-weight: 700;">ממתין</span>
+                        {% elif task.status == "in_progress" %}
+                            <div class="d-flex align-items-center justify-content-center gap-3">
+                                <span class="status-in-progress">בתהליך ביצוע</span>
+                                <form method="POST" action="{% url 'update_task_status' task.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-glow-sky">סיום</button>
+                                </form>
+                            </div>
+                        {% elif task.status == "completed" %}
+                            <span class="badge-final-success">בוצע <i class="fas fa-check-circle"></i></span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if user.person.role == 'admin' %}
+                            <div class="d-flex gap-3 justify-content-center">
+                                <a href="{% url 'editTask' task.id %}" class="text-info"><i class="fas fa-pen"></i></a>
+                                <form method="POST" action="{% url 'delete_task' task.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="border-0 bg-transparent text-danger p-0" onclick="return confirm('האם למחוק משימה זו?')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5">
+                        <div class="text-muted">
+                            <i class="fas fa-search fa-3x mb-3 opacity-20"></i>
+                            <p class="fw-bold">לא נמצאו משימות התואמות לסינון הנבחר.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // פונקציה להעלמת ההודעות באופן אוטומטי
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.custom-alert');
+        alerts.forEach(function(alert) {
+            setTimeout(function() {
+                alert.style.transition = "opacity 0.5s ease";
+                alert.style.opacity = "0";
+                setTimeout(function() {
+                    alert.remove();
+                }, 500);
+            }, 3000); // ההודעה תיעלם אחרי 3 שניות
+        });
+    });
+</script>
+
+{% endblock %}

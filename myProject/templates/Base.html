@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול משימות - פריסה מלאה</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-main: #f8fbff;
+            --primary-grad: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --text-dark: #1e293b;
+            --shadow-color: rgba(79, 70, 229, 0.1);
+        }
+
+        body {
+            background-color: var(--bg-main);
+            font-family: 'Assistant', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden; /* מניעת סקרול אופקי מיותר */
+        }
+
+        /* =========================
+           NAVBAR - לרוחב כל המסך
+           ========================= */
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            width: 100%; /* רוחב מלא */
+            padding: 15px 40px; /* ריווח צדדים רחב */
+            border-bottom: 2px solid #e2e8f0;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            font-size: 1.6rem;
+            font-weight: 900;
+            text-decoration: none;
+            background: var(--primary-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links-list {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .nav-links-list a {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .nav-links-list a:hover {
+            background: #f1f5f9;
+            color: #4f46e5;
+        }
+
+        /* =========================
+           MAIN CONTENT - ללא הגבלת רוחב
+           ========================= */
+        .main-content {
+            width: 100%; /* הפיכת התוכן לרוחב כל הדף */
+            padding: 30px 40px; /* ריווח פנימי מהקצוות */
+            margin: 0;
+        }
+
+        /* ביטול ה-Glass Container המצומצם */
+        .full-width-content {
+            background: transparent; /* הסרת הרקע הלבן המצומצם */
+            width: 100%;
+        }
+
+        /* כפתור הרשמה בולט בנאבבר */
+        .btn-nav-special {
+            background: var(--primary-grad);
+            color: white !important;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar-custom">
+        <a href="{% url 'home' %}" class="nav-logo">
+            <i class="fas fa-rocket me-2"></i>TaskMaster
+        </a>
+
+        <ul class="nav-links-list">
+            <li><a href="{% url 'home' %}">בית</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'tasks' %}">משימות</a></li>
+                {% if user.person.role == 'admin' %}
+                    <li><a href="{% url 'addTask' %}" title="הוספת משימה"><i class="fas fa-plus-circle"></i></a></li>
+                {% endif %}
+                <li><a href="{% url 'logout' %}" style="color: #ef4444;">התנתקות ({{ user.username }})</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">כניסה</a></li>
+                <li><a href="{% url 'register' %}" class="btn-nav-special">הרשמה</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="full-width-content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+</body>
+</html>

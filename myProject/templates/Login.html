@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    /* רקע עם תנועה צבעונית עדינה */
+    .login-wrapper {
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        overflow: hidden;
+    }
+
+    /* הילות צבעוניות מסתובבות ברקע */
+    .glow-sphere {
+        position: absolute;
+        width: 350px;
+        height: 350px;
+        filter: blur(100px);
+        opacity: 0.25;
+        border-radius: 50%;
+        z-index: 0;
+        animation: pulseGlow 10s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+        0% { transform: translate(-20%, -20%) scale(1); }
+        100% { transform: translate(20%, 20%) scale(1.2); }
+    }
+
+    .login-card {
+        max-width: 420px;
+        width: 100%;
+        padding: 40px;
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(15px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        position: relative;
+        z-index: 1;
+        animation: fadeInScale 0.5s ease-out;
+    }
+
+    @keyframes fadeInScale {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .login-card h2 {
+        font-size: 2.2rem;
+        font-weight: 900;
+        margin-bottom: 30px;
+        background: linear-gradient(45deg, #4f46e5, #ec4899);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+    }
+
+    /* עיצוב שדות הטופס של Django */
+    .login-form p {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .login-form input {
+        width: 100%;
+        padding: 12px 15px 12px 45px;
+        border-radius: 15px;
+        border: 2px solid #e2e8f0;
+        background: #f8fafc;
+        transition: 0.3s;
+        font-size: 1rem;
+    }
+
+    .login-form input:focus {
+        border-color: #4f46e5;
+        background: white;
+        box-shadow: 0 0 15px rgba(79, 70, 229, 0.1);
+        outline: none;
+    }
+
+    /* כפתור כניסה עם "פיצוץ" צבע */
+    .btn-login {
+        width: 100%;
+        padding: 15px;
+        border-radius: 15px;
+        border: none;
+        background: linear-gradient(45deg, #4f46e5, #7c3aed, #ec4899);
+        background-size: 200% auto;
+        color: white;
+        font-weight: 800;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+        transition: 0.5s;
+        cursor: pointer;
+    }
+
+    .btn-login:hover {
+        background-position: right center;
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(124, 58, 237, 0.5);
+    }
+
+    .error-msg {
+        background: rgba(255, 0, 0, 0.05);
+        color: #dc3545;
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+        border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+
+    .register-link {
+        display: block;
+        text-align: center;
+        margin-top: 25px;
+        font-size: 0.9rem;
+        color: #64748b;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+    .register-link b { color: #4f46e5; }
+    .register-link:hover { opacity: 0.8; }
+</style>
+
+<div class="login-wrapper">
+    <div class="glow-sphere" style="top: 10%; left: 15%; background: #4f46e5;"></div>
+    <div class="glow-sphere" style="bottom: 10%; right: 15%; background: #ec4899;"></div>
+
+    <div class="login-card">
+        <h2>כניסה</h2>
+
+        {% if error %}
+            <div class="error-msg">
+                <i class="fas fa-exclamation-circle"></i> {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="post" class="login-form">
+            {% csrf_token %}
+
+            <div id="form-fields">
+                {{ form.as_p }}
+            </div>
+
+            <button type="submit" class="btn-login">
+                התחברות <i class="fas fa-sign-in-alt ms-2"></i>
+            </button>
+        </form>
+
+        <a href="{% url 'register' %}" class="register-link">
+            עוד לא רשום? <b>צור חשבון חדש</b>
+        </a>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.login-form p').forEach((p, index) => {
+        const icon = document.createElement('i');
+        icon.style.position = 'absolute';
+        icon.style.left = '15px';
+        icon.style.top = '42px';
+        icon.style.color = '#94a3b8';
+
+        // אייקון שונה לכל שדה
+        if (index === 0) icon.className = 'fas fa-user';
+        else icon.className = 'fas fa-lock';
+
+        p.appendChild(icon);
+    });
+</script>
+
+{% endblock %}
